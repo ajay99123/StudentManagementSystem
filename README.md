@@ -1,38 +1,39 @@
 # Student Management System
 
-A console-based Student Management System developed using Java.
+A beginner-friendly Student Management System developed using **Java, JDBC, and MySQL**.
 
 ## Version
 
-**v1.0 – File Handling Version**
+**v2.0 – Final**
 
 ## Features
 
-- Add a student
-- View all students
-- Update student details
-- Delete a student
-- Input validation
-- Store student data using file handling
+- Add Student
+- View All Students
+- Search Student by ID
+- Update Student
+- Delete Student
+- Input Validation
+- MySQL Database Integration
+- JDBC Connectivity
 
 ## Technologies Used
 
 - Java
-- Object-Oriented Programming (OOP)
-- ArrayList
-- File Handling
-- Exception Handling
+- JDBC
+- MySQL
+- IntelliJ IDEA
+- Git & GitHub
 
 ## Project Structure
 
 ```text
-StudentManagementSystem/
+StudentManagementSystem
 │
-├── src/
+├── src
 │   ├── Main.java
 │   ├── Student.java
-│   └── StudentManagement.java
+│   ├── StudentManagement.java
+│   └── DbConnection.java
 │
-├── student.txt
-├── .gitignore
 └── README.md
