@@ -37,3 +37,12 @@ StudentManagementSystem
 │   └── DbConnection.java
 │
 └── README.md
+
+## Version History
+Clearly separates **v1.0** and **v2.0 – Final**.
+
+## Future Improvements
+Shows what you might add later.
+
+## Author
+**Ajay**
