@@ -1,5 +1,6 @@
+import java.sql.SQLOutput;
 import java.util.*;
-
+import java.io.IOException;
 public class Main {
     static void ValidatId(int var) throws UnmatchedArguement {
         if (var <= 0 || var > 1999) {
@@ -63,39 +64,48 @@ public class Main {
             throw new UnmatchedArguement("Course Not Found..");
         }
     }
-
+    static void ValidatePhone(String phone) throws UnmatchedArguement{
+        if(phone.length()>10||phone.length()<10){
+            throw new UnmatchedArguement("Enter A Valid Phone Number");
+        }
+        int count=0;
+        for(int i=0;i<phone.length();i++){
+            if(Character.isDigit(phone.charAt(i))){
+                count++;
+            }
+        }
+        if(count<10||count>10){
+            throw new UnmatchedArguement("Enter A Valid Phone Number");
+        }
+        if(phone.charAt(0)!='9'&& phone.charAt(0)!='8'&& phone.charAt(0)!='7'&&phone.charAt(0)!='6'){
+            throw new UnmatchedArguement("Enter A Valid Phone Number");
+        }
+    }
+    static void ValidSearch(int id) throws UnmatchedArguement{
+        if(id<=0){
+            throw new UnmatchedArguement("Enter Valid ID.");
+        }
+    }
     public static void main(String[] args) {
         Scanner obj = new Scanner(System.in);
         StudentManagement management = new StudentManagement();
-        management.LoadFile();
         while (true) {
             System.out.println("======Student Management System======");
             System.out.println("1.For Add Student.");
             System.out.println("2.For Updating Student.");
             System.out.println("3.For Deleting Student.");
             System.out.println("4.For View Students.");
-            System.out.println("5.For Exit Progarm.");
+            System.out.println("5.For Search Student By ID.");
+            System.out.println("6.For Exit Progarm.");
             int n = obj.nextInt();
+            obj.nextLine();
             switch (n) {
                 case 1:
-                    System.out.println("Enter Student ID: ");
-                    int id;
-                    while (true) {
-
-                        try {
-                            id = obj.nextInt();
-                            obj.nextLine();
-                            ValidatId(id);
-                        } catch (UnmatchedArguement e) {
-                            System.out.println(e.getMessage());
-                            continue;
-                        }
-                        break;
-                    }
-                    System.out.println("Enter Name of the student:\n");
+                    System.out.println("Enter Name of the student:");
                     String name;
                     while (true) {
                         name = obj.nextLine();
+                        name=name.trim();
                         try {
                             ValidateName(name);
                         } catch (UnmatchedArguement e) {
@@ -129,7 +139,19 @@ public class Main {
                         }
                         break;
                     }
-                    Student student = new Student(id, name, email, course);
+                    System.out.println("Enter Phone NUmber: ");
+                    String phone;
+                    while (true) {
+                        phone = obj.nextLine();
+                        try {
+                            ValidatePhone(phone);
+                        } catch (UnmatchedArguement e) {
+                            System.out.println(e.getMessage());
+                            continue;
+                        }
+                        break;
+                    }
+                    Student student = new Student(0,name, email,phone , course);
                     management.addStudent(student);
                     break;
                 case 2:
@@ -150,6 +172,7 @@ public class Main {
                     String nm;
                     while (true) {
                         nm = obj.nextLine();
+                        nm=nm.trim();
                         try {
                             UpdateName(nm);
                         } catch (UnmatchedArguement e) {
@@ -170,17 +193,56 @@ public class Main {
                         }
                         break;
                     }
-                    management.updateStudent(iid, nm, crs);
+                    System.out.println("Enter Phone NUmber: ");
+                    String ph;
+                    while (true) {
+                        ph = obj.nextLine();
+                        try {
+                            ValidatePhone(ph);
+                        } catch (UnmatchedArguement e) {
+                            System.out.println(e.getMessage());
+                            continue;
+                        }
+                        break;
+                    }
+                    management.updateStudent(iid,nm,ph,crs);
                     break;
                 case 3:
                     System.out.println("Enter ID to delete the Student: ");
-                    int rmd = obj.nextInt();
+                    int rmd;
+                    while(true){
+                        rmd=obj.nextInt();
+                        obj.nextLine();
+                        try{
+                            ValidSearch(rmd);
+                        } catch (UnmatchedArguement e) {
+                            System.out.println(e.getMessage());
+                            continue;
+                        }
+                        break;
+                    }
                     management.removeStudent(rmd);
                     break;
                 case 4:
                     management.viewStudents();
                     break;
                 case 5:
+                    int id;
+                    System.out.println("Enter Student ID: ");
+                    while(true){
+                        id=obj.nextInt();
+                        obj.nextLine();
+                        try{
+                            ValidSearch(id);
+                        } catch (UnmatchedArguement e) {
+                            System.out.println(e.getMessage());
+                            continue;
+                        }
+                        break;
+                    }
+                    management.SearchStudent(id);
+                    break;
+                case 6:
                     System.out.println("Program Closed");
                     return;
                 default:

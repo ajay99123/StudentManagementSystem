@@ -3,10 +3,12 @@ public class Student {
     private String name;
     private String email;
     private String course;
-    public Student(int id, String name,String email,String course){
+    private String phone;
+    public Student(int id, String name,String email,String phone,String course){
         this.id=id;
         this.name=name;
         this.email=email;
+        this.phone=phone;
         this.course=course;
     }
     public void setId(int id) {
@@ -32,5 +34,11 @@ public class Student {
     }
     public String getEmail() {
         return email;
+    }
+    public void setPhone(String phone){
+        this.phone=phone;
+    }
+    public String getPhone(){
+        return phone;
     }
 }

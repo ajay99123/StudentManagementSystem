@@ -1,97 +1,103 @@
-
-import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Scanner;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 public class StudentManagement {
-    ArrayList<Student> students = new ArrayList<>();
-
     //Adding the Student here
     public void addStudent(Student student) {
-        students.add(student);
-        saveTOFile();
-        System.out.println("Succesfully Added the Student.");
-        return;
+        String query = "INSERT INTO STUDENT(name,email,phone,course) VALUES(?,?,?,?)";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement prepst = con.prepareStatement(query)) {
+            prepst.setString(1, student.getName());
+            prepst.setString(2, student.getEmail());
+            prepst.setString(3, student.getPhone());
+            prepst.setString(4, student.getCourse());
+            prepst.executeUpdate();
+            System.out.println("Successfully Added to Student Database.");
+        } catch (SQLException e) {
+            System.out.println("Error occured While adding Student to Database--" + e.getMessage());
+        }
     }
 
     //updating the Student here
-    public void updateStudent(int id, String name, String course) {
-        for (Student student : students) {
-            if (student.getId() == id) {
-                student.setName(name);
-                student.setCourse(course);
-                saveTOFile();
-                System.out.println("Updated Successfully");
-                return;
+    public void updateStudent(int id, String name,  String phone,String course) {
+        String query = "UPDATE STUDENT SET name=? ,phone=? , course=?  WHERE id= ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement prepst = con.prepareStatement(query)) {
+            prepst.setString(1, name);
+            prepst.setString(2, phone);
+            prepst.setString(3, course);
+            prepst.setInt(4, id);
+            int rows = prepst.executeUpdate();
+            if (rows > 0) {
+                System.out.println("Updated Successfully.");
+            } else {
+                System.out.println("Student not found.");
             }
+        } catch (SQLException e) {
+            System.out.println("Error Occured while Updating Student." + e.getMessage());
         }
-        System.out.println("Student not found.");
     }
 
     //viewing all the Students here
     public void viewStudents() {
-        if (students.isEmpty()) {
-            System.out.println("Students Not found.");
-            return;
-        }
-        for (Student student : students) {
-//            System.out.println("<------------------------------------->");
-            System.out.println("Student Id: " + student.getId());
-            System.out.println("Name: " + student.getName());
-            System.out.println("Email: " + student.getEmail());
-            System.out.println("Enrolled Course: " + student.getCourse());
-            System.out.println("<------------------------------------->");
-            System.out.println();
+        String query = "select * from student";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement prepst = con.prepareStatement(query);
+             ResultSet rs = prepst.executeQuery()) {
+            boolean found = true;
+            while (rs.next()) {
+                found = false;
+                System.out.println("Student Id: " + rs.getInt("id"));
+                System.out.println("Name: " + rs.getString("name"));
+                System.out.println("Email: " + rs.getString("email"));
+                System.out.println("Phone: " + rs.getString("phone"));
+                System.out.println("Enrolled Course: " + rs.getString("course"));
+                System.out.println("<------------------------------------------------->");
+            }
+            if (found) {
+                System.out.println("Students Not Found.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error occured while Loading Student Databse" + e.getMessage());
         }
     }
 
     //deleting the Student here
     public void removeStudent(int id) {
-        for (Student student : students) {
-            if (student.getId() == id) {
-                students.remove(student);
-                saveTOFile();
-                System.out.println("Successfully Removed the Student.");
-                return;
+        String query = "DELETE FROM STUDENT WHERE id=?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement prepst = con.prepareStatement(query)) {
+            prepst.setInt(1,id);
+            int row=prepst.executeUpdate();
+            if(row>0){
+                System.out.println("Succesfully Deleted the Student.");
+            }else{
+                System.out.println("Student Not Found");
             }
-        }
-        System.out.println("Student Not found.");
-    }
-    public void saveTOFile(){
-        try{
-            FileWriter wrt=new FileWriter("student.txt");
-            for(Student student:students){
-                wrt.write(student.getId()+" | "+student.getName()+" | "+student.getEmail()+" | "+student.getCourse()+"\n");
-            }
-            wrt.close();
-        } catch (IOException e) {
-            System.out.println(" Error Occured while Saving the content");
+        } catch (SQLException e) {
+            System.out.println("Error Ocuured While Deleting Student" + e.getMessage());
         }
     }
-    public void LoadFile(){
-        File file=new File("student.txt");
-        if(!file.exists()){
-            return;
-        }
-        try{
-            Scanner obj=new Scanner(file);
-            while(obj.hasNextLine()){
-                String line= obj.nextLine();
-                String[] data=line.split("\\|");
-                int id=Integer.parseInt(data[0].trim());
-                String name=data[1].trim();
-                String email=data[2].trim();
-                String course=data[3].trim();
-                Student student=new Student(id,name,email,course);
-                students.add(student);
+    public void SearchStudent(int id){
+        String query="select * from student where id= ?";
+        try(Connection con=DbConnection.getConnection();
+        PreparedStatement prepst= con.prepareStatement(query)){
+            prepst.setInt(1,id);
+            ResultSet rs= prepst.executeQuery();
+            if(rs.next()) {
+                System.out.println("Student Id: " + rs.getInt("id"));
+                System.out.println("Name: " + rs.getString("name"));
+                System.out.println("Email: " + rs.getString("email"));
+                System.out.println("Phone: " + rs.getString("phone"));
+                System.out.println("Enrolled Course: " + rs.getString("course"));
+                System.out.println("<------------------------------------------------->");
+            }else{
+                System.out.println("Student Not Found.");
             }
-            obj.close();
         }
-        catch(IOException e){
-            System.out.println("Error Ocuured while Working With File.");
+        catch(SQLException e){
+            System.out.println("Error occured While Searching Student."+e.getMessage());
         }
-
     }
 }
